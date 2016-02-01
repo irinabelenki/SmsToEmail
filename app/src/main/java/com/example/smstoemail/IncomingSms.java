@@ -48,7 +48,7 @@ public class IncomingSms extends BroadcastReceiver {
         SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
-        if(!redirect) {
+        if(!redirect || accountName == null) {
             return;
         }
 
