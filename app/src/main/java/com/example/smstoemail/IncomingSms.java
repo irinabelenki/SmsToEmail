@@ -27,15 +27,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.gmail.model.Label;
-import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.Message;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
@@ -46,8 +38,8 @@ public class IncomingSms extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
+        Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         if(!redirect || accountName == null) {
             return;
         }
@@ -60,10 +52,13 @@ public class IncomingSms extends BroadcastReceiver {
                     SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
                     String phoneNumber = currentMessage.getDisplayOriginatingAddress();
                     String messageBody = currentMessage.getDisplayMessageBody();
-                    Log.i(MainActivity.TAG, "phoneNumber: " + phoneNumber + "; message: " + messageBody);
+                    String logMsg = "Received SMS: phoneNumber: " + phoneNumber + "; messageBody: " + messageBody;
+                    Log.i(MainActivity.TAG, logMsg);
+                    Toast.makeText(context, logMsg, Toast.LENGTH_LONG).show();
 
                     GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
-                    String[] params = {accountName,
+                    String[] params = {
+                            accountName,
                             phoneNumber,
                             "From:" + phoneNumber,
                             messageBody};
@@ -72,7 +67,9 @@ public class IncomingSms extends BroadcastReceiver {
                 }
             }
         } catch (Exception e) {
-            Log.e(MainActivity.TAG, "Exception smsReceiver" + e);
+            String errorMsg = "Exception in SMS receiver" + e;
+            Log.e(MainActivity.TAG, errorMsg);
+            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -81,8 +78,7 @@ public class IncomingSms extends BroadcastReceiver {
         private Exception mLastError = null;
         private Context context;
 
-        public SendEmailTask(Context context,
-                             GoogleAccountCredential credential) {
+        public SendEmailTask(Context context, GoogleAccountCredential credential) {
             this.context = context;
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -103,6 +99,9 @@ public class IncomingSms extends BroadcastReceiver {
                 Message message = MessageBuilder.createMessageWithEmail(mimeMessage);
                 MessageBuilder.sendMessage(mService, "me", mimeMessage);
             } catch (Exception e) {
+                String errorMsg = "Exception in doInBackground" + e;
+                Log.e(MainActivity.TAG, errorMsg);
+                //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 mLastError = e;
                 cancel(true);
             }
@@ -129,19 +128,31 @@ public class IncomingSms extends BroadcastReceiver {
         @Override
         protected void onCancelled() {
             //mProgress.hide();
+            String errorMsg;
 //TODO what to do with it?
             if (mLastError != null) {
+
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     //todo showGooglePlayServicesAvailabilityErrorDialog(((GooglePlayServicesAvailabilityIOException) mLastError).getConnectionStatusCode());
+                    errorMsg = "onCancelled: mLastError instanceof GooglePlayServicesAvailabilityIOException ";
+                    Log.e(MainActivity.TAG, errorMsg);
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 } else if (mLastError instanceof UserRecoverableAuthIOException) {
                     //todo startActivityForResult(((UserRecoverableAuthIOException) mLastError).getIntent(), REQUEST_AUTHORIZATION);
+                    errorMsg = "onCancelled: mLastError instanceof UserRecoverableAuthIOException ";
+                    Log.e(MainActivity.TAG, errorMsg);
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 } else {
                     //mOutputText.setText("The following error occurred:\n" + mLastError.getMessage());
-                    Toast.makeText(context, "The following error occurred:\n" + mLastError.getMessage(), Toast.LENGTH_LONG).show();
+                    errorMsg = "onCancelled: The following error occurred:\n" + mLastError.getMessage();
+                    Log.e(MainActivity.TAG, errorMsg);
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 }
             } else {
                 //mOutputText.setText("Request cancelled.");
-                Toast.makeText(context, "Request cancelled.", Toast.LENGTH_LONG).show();
+                errorMsg = "onCancelled: Request cancelled";
+                Log.e(MainActivity.TAG, errorMsg);
+                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
             }
         }
     }

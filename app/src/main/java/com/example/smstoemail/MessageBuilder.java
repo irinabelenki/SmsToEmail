@@ -3,6 +3,9 @@ package com.example.smstoemail;
 /**
  * Created by Irina on 1/18/2016.
  */
+import android.util.Log;
+import android.widget.Toast;
+
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -45,8 +48,12 @@ public class MessageBuilder {
         Message message = createMessageWithEmail(email);
         message = service.users().messages().send(userId, message).execute();
 
-        System.out.println("Message id: " + message.getId());
-        System.out.println(message.toPrettyString());
+        //System.out.println("Message id: " + message.getId());
+        //System.out.println(message.toPrettyString());
+
+        String logMsg = "sendMessage: " + message.toPrettyString();
+        Log.e(MainActivity.TAG, logMsg);
+        //Toast.makeText(context, logMsg, Toast.LENGTH_LONG).show();
     }
 
     /**

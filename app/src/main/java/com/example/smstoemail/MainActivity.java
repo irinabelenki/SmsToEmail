@@ -9,11 +9,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "SMS_TO_EMAIL";
     TextView outputTextView;
     CheckBox redirectCheckBox;
+    Button setupAccountButton;
     GoogleAccountCredential credential;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -33,22 +38,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        outputTextView = (TextView)findViewById(R.id.output_textview);
+        outputTextView = (TextView) findViewById(R.id.output_textview);
 
         redirectCheckBox = (CheckBox) findViewById(R.id.redirect_checkbox);
         SharedPreferences settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
         Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         redirectCheckBox.setChecked(redirect);
+        redirectCheckBox.setEnabled(accountName != null);
 
         redirectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    SharedPreferences settings = MainActivity.this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                    settings.edit().putBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, buttonView.isChecked()).commit();
-                }
-            }
+                                                        @Override
+                                                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                                            SharedPreferences settings = MainActivity.this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                                                            settings.edit().putBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, buttonView.isChecked()).commit();
+                                                        }
+                                                    }
         );
-        credential = ((SmsToEmailApplication)getApplicationContext()).getGoogleAccountCredential();
+
+        setupAccountButton = (Button) findViewById(R.id.setup_account_button);
+        setupAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseAccount();
+            }
+        });
+
+        credential = ((SmsToEmailApplication) getApplicationContext()).getGoogleAccountCredential();
     }
 
     protected void onResume() {
@@ -87,17 +103,18 @@ public class MainActivity extends AppCompatActivity {
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
      * the resultCode it returned, and any additional data from it.
+     *
      * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
+     * @param resultCode  code indicating the result of the incoming
+     *                    activity result.
+     * @param data        Intent (containing result data) returned by incoming
+     *                    activity result.
      */
     @Override
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
                     isGooglePlayServicesAvailable();
@@ -112,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
+                        String message = "set account name: " + accountName;
+                        Log.i(TAG, message);
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
                     outputTextView.setText("Account unspecified.");
@@ -149,12 +169,12 @@ public class MainActivity extends AppCompatActivity {
      * account.
      */
     private void chooseAccount() {
-        startActivityForResult(
-                credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
     }
 
     /**
      * Checks whether the device currently has a network connection.
+     *
      * @return true if the device has a network connection, false otherwise.
      */
     private boolean isDeviceOnline() {
@@ -168,8 +188,9 @@ public class MainActivity extends AppCompatActivity {
      * Check that Google Play services APK is installed and up to date. Will
      * launch an error dialog for the user to update Google Play Services if
      * possible.
+     *
      * @return true if Google Play Services is available and up to
-     *     date on this device; false otherwise.
+     * date on this device; false otherwise.
      */
     private boolean isGooglePlayServicesAvailable() {
         final int connectionStatusCode =
@@ -177,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
             return false;
-        } else if (connectionStatusCode != ConnectionResult.SUCCESS ) {
+        } else if (connectionStatusCode != ConnectionResult.SUCCESS) {
             return false;
         }
         return true;
@@ -186,8 +207,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Display an error dialog showing that Google Play Services is missing
      * or out of date.
+     *
      * @param connectionStatusCode code describing the presence (or lack of)
-     *     Google Play Services on this device.
+     *                             Google Play Services on this device.
      */
     void showGooglePlayServicesAvailabilityErrorDialog(
             final int connectionStatusCode) {
