@@ -10,6 +10,7 @@
         android:id="@+id/redirect_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Redirect SMS to my email"
         android:checked="false" />
 
@@ -17,12 +18,14 @@
         android:id="@+id/setup_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Setup account" />
 
     <TextView
         android:id="@+id/output_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="No output" />
 
 </LinearLayout>
