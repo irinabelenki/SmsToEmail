@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
         redirectCheckBox.setEnabled(accountName != null);
+        redirectCheckBox.setText("Redirect SMS to " + accountName);
     }
 
     @Override
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
-                        outputTextView.setText("Account was chosen.");
+                        //outputTextView.setText("Account was chosen.");
                         String message = "set account name: " + accountName;
                         Log.i(TAG, message);
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         sendConfirmationMail(accountName);
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-                    outputTextView.setText("Account not changed.");
+                    //outputTextView.setText("Account not changed.");
                 }
                 break;
             case REQUEST_AUTHORIZATION:
@@ -280,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                MimeMessage mimeMessage = MessageBuilder.createEmail(params[0], params[0], params[3], params[2]);
+                MimeMessage mimeMessage = MessageBuilder.createEmail(params[0], params[0], params[1], params[2]);
                 Message message = MessageBuilder.createMessageWithEmail(mimeMessage);
                 MessageBuilder.sendMessage(mService, "me", mimeMessage);
             } catch (Exception e) {
