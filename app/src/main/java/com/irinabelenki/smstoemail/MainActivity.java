@@ -2,12 +2,19 @@ package com.irinabelenki.smstoemail;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -346,6 +353,52 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    public void showNotification(){
+        // define sound URI, the sound to be played when there's a notification
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        // intent triggered, you can add other intent for other actions
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+        // this is it, we'll build the notification!
+        // in the addAction method, if you don't want any icon, just set the first param to 0
+        Notification mNotification = new Notification.Builder(this)
+                        .setContentTitle("SmsToEmail")
+                        .setContentText("Open Settings")
+                        .setSmallIcon(android.R.drawable.ic_lock_silent_mode)
+                        .setContentIntent(pIntent)
+                        //.setSound(soundUri)
+                        //.addAction(R.drawable.common_signin_btn_icon_dark, "View", pIntent)
+                        //.addAction(0, "Remind", pIntent)
+                        .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // If you want to hide the notification after it was selected, do the code below
+        // myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notificationManager.notify(0, mNotification);
+    }
+
+    public void cancelNotification(int notificationId){
+        if (Context.NOTIFICATION_SERVICE != null) {
+            String ns = Context.NOTIFICATION_SERVICE;
+            NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(ns);
+            nMgr.cancel(notificationId);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        cancelNotification(0);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        showNotification();
+    }
+
 
 
 }
