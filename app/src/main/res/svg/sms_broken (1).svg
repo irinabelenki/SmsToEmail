@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 10500 10500">
+
+    <g transform="translate(1500,3700) scale(1.8,1.8) skewX(-50) ">
+      <rect x="0" y="0" rx="400" ry="400" width="4500" height="3000" fill="#f08080" stroke="black" stroke-width="100" />
+      <line x1="1300" y1="1200" x2="2300" y2="1200" stroke="red" stroke-width="200" />
+      <line x1="1300" y1="1800" x2="2300" y2="1800" stroke="red" stroke-width="200" />
+      <path fill="none" stroke="red" stroke-width="200" d="M3000,500 A1500,1500,0,0,1,3000,2500" />
+    </g>
+
+    <g transform="translate(1500,2700) scale(1.8,1.8) skewX(-50) ">
+      <rect x="0" y="0" rx="400" ry="400" width="4500" height="3000" fill="#f08080" stroke="black" stroke-width="100" />
+      <line x1="1300" y1="1200" x2="2300" y2="1200" stroke="red" stroke-width="200" />
+      <line x1="1300" y1="1800" x2="2300" y2="1800" stroke="red" stroke-width="200" />
+      <path fill="none" stroke="red" stroke-width="200" d="M3000,500 A1500,1500,0,0,1,3000,2500" />
+    </g>
+
+    <g transform="translate(1500,1700) scale(1.8,1.8) skewX(-50) ">
+      <rect x="0" y="0" rx="400" ry="400" width="4500" height="3000" fill="#f08080" stroke="black" stroke-width="100" />
+      <line x1="1300" y1="1200" x2="2300" y2="1200" stroke="red" stroke-width="200" />
+      <line x1="1300" y1="1800" x2="2300" y2="1800" stroke="red" stroke-width="200" />
+      <path fill="none" stroke="red" stroke-width="200" d="M3000,500 A1500,1500,0,0,1,3000,2500" />
+    </g>
+
+
+    <text x="5000" y="9000" font-size="12000px" fill="red" stroke="black" stroke-width="20">!</text>
+</svg>
