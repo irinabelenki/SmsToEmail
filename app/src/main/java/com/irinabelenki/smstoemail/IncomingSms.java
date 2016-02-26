@@ -65,7 +65,6 @@ public class IncomingSms extends BroadcastReceiver {
                     String[] params = {
                             accountName,
                             phoneNumber,
-                           // "From:" + phoneNumber,
                             messageBody};
 
                     new SendEmailTask(context, credential).execute(params);
@@ -107,7 +106,7 @@ public class IncomingSms extends BroadcastReceiver {
             } catch (Exception e) {
                 String errorMsg = "Exception in doInBackground: " + e;
                 Log.e(MainActivity.TAG, errorMsg);
-                //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+
                 mLastError = e;
                 cancel(true);
             }
@@ -116,49 +115,31 @@ public class IncomingSms extends BroadcastReceiver {
 
         @Override
         protected void onPreExecute() {
-            //mOutputText.setText("");
-            //mProgress.show();
+
         }
 
         @Override
         protected void onPostExecute(Void output) {
-            //mProgress.hide();
-            //if (output == null || output.size() == 0) {
-            //    mOutputText.setText("No results returned.");
-            //} else {
-            //    output.add(0, "Data retrieved using the Gmail API:");
-            //    mOutputText.setText(TextUtils.join("\n", output));
-            //}
+
         }
 
         @Override
         protected void onCancelled() {
-            //mProgress.hide();
             String errorMsg;
-//TODO what to do with it?
             if (mLastError != null) {
+                GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
+                credential.setSelectedAccountName(null);
+                SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
+                editor.apply();
 
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    //todo
-                    // showGooglePlayServicesAvailabilityErrorDialog(((GooglePlayServicesAvailabilityIOException) mLastError).getConnectionStatusCode());
-                    errorMsg = "onCancelled: mLastError instanceof GooglePlayServicesAvailabilityIOException ";
-                    Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    //todo
-                    // startActivityForResult(((UserRecoverableAuthIOException) mLastError).getIntent(), REQUEST_AUTHORIZATION);
+                //todo error dialog "some sms could be not forwarded"
 
-                    errorMsg = "onCancelled: mLastError instanceof UserRecoverableAuthIOException ";
-                    Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
-                } else {
-                    //mOutputText.setText("The following error occurred:\n" + mLastError.getMessage());
-                    errorMsg = "onCancelled: The following error occurred:\n" + mLastError.getMessage();
-                    Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
-                }
+                errorMsg = "onCancelled: lastError: " + mLastError.toString();
+                Log.e(MainActivity.TAG, errorMsg);
+                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
             } else {
-                //mOutputText.setText("Request cancelled.");
                 errorMsg = "onCancelled: Request cancelled";
                 Log.e(MainActivity.TAG, errorMsg);
                 Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();

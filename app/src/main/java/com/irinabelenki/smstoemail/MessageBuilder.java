@@ -3,7 +3,10 @@ package com.irinabelenki.smstoemail;
 /**
  * Created by Irina on 1/18/2016.
  */
+
+import android.provider.MediaStore;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
@@ -16,9 +19,9 @@ import java.io.IOException;
 //import java.nio.file.Files;
 import java.util.Properties;
 
-//import javax.activation.DataHandler;
-//import javax.activation.DataSource;
-//import javax.activation.FileDataSource;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
@@ -27,12 +30,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-// ...
-
 public class MessageBuilder {
-
-    // ...
-
     /**
      * Send an email from the user's mailbox to its recipient.
      *
@@ -113,9 +111,10 @@ public class MessageBuilder {
      * @return MimeMessage to be used to send email.
      * @throws MessagingException
      */
-/*
+
     public static MimeMessage createEmailWithAttachment(String to, String from, String subject,
-                                                        String bodyText, String fileDir, String filename) throws MessagingException, IOException {
+                                                        String bodyText,
+                                                        String fileDir, String filename) throws MessagingException, IOException {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
 
@@ -139,8 +138,11 @@ public class MessageBuilder {
 
         mimeBodyPart.setDataHandler(new DataHandler(source));
         mimeBodyPart.setFileName(filename);
-        String contentType = Files.probeContentType(FileSystems.getDefault()
-                .getPath(fileDir, filename));
+
+        //String contentType = MediaStore.Files.probeContentType(FileSystems.getDefault().getPath(fileDir, filename));
+
+        String contentType = getMimeType(fileDir + "/" + filename);
+
         mimeBodyPart.setHeader("Content-Type", contentType + "; name=\"" + filename + "\"");
         mimeBodyPart.setHeader("Content-Transfer-Encoding", "base64");
 
@@ -150,8 +152,14 @@ public class MessageBuilder {
 
         return email;
     }
-*/
-    // ...
 
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
 }
 
