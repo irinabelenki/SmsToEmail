@@ -4,10 +4,12 @@ package com.irinabelenki.smstoemail;
  * Created by Irina on 1/18/2016.
  */
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -135,6 +137,7 @@ public class IncomingSms extends BroadcastReceiver {
                 editor.apply();
 
                 //todo error dialog "some sms could be not forwarded"
+                showErrorDialog();
 
                 errorMsg = "onCancelled: lastError: " + mLastError.toString();
                 Log.e(MainActivity.TAG, errorMsg);
@@ -167,6 +170,22 @@ public class IncomingSms extends BroadcastReceiver {
             }
 
             return name;
+        }
+
+        private void showErrorDialog() {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+            alertDialogBuilder.setTitle("Error");
+
+            alertDialogBuilder
+                    .setMessage("Some SMS could be not forwarded")
+                    .setCancelable(false)
+                    .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 }

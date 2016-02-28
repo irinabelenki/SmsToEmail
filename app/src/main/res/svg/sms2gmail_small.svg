@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 10500 10500">
-  <g>
-   <path fill="#E75A4D" stroke="black" stroke-width="1" d="
+<svg 
+	xmlns="http://www.w3.org/2000/svg" 	xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" 	viewBox="0 0 10500 10500">
+  	<g>
+   		<path style="fill:#E75A4D;stroke:#000000;stroke-width:1" 			 d="
                                                          M1000, 10000
                                                          a1000,1000,0,0,1,-1000,-1000
                                                          L0,4000
@@ -16,21 +17,22 @@
                                                          L1000,10000
                                                          "/>
 
-    <polygon fill="#F7F5ED" points="1000,4000 5000,1500 9000,4000 5000,7500"/>
+    <polygon 
+		style="fill:#F7F5ED" 
+		points="1000,4000 5000,1500 9000,4000 5000,7500"/>
 
 
-
-
-
-    <path fill="none" stroke="black" stroke-width="50" d="
+    <path 
+		style="fill:none;stroke:#000000;stroke-width:50" 
+		d="
                                           M1025,4000
                                           L8975,4000
                                           L5000,1500z
                                           "/>
 
-
-
-    <path fill="#E7E4D7" stroke="black" stroke-width="50" d="
+    <path 
+		style="fill:#E7E4D7;stroke:#000000;stroke-width:50" 
+		d="
                                           M1000,9975
                                           l0,-5950,
                                           L5000,7000
@@ -42,7 +44,9 @@
 
                                           "/>
 
-    <path fill="#B2392F" stroke="black" stroke-width="3" d="
+    <path 
+		style="fill:#B2392F;stroke:#000000;stroke-width:3" 
+		d="
                                                          M9000,10000
                                                          a1000,1000,1,0,0,1000,-1000
                                                          L10000,4000
@@ -54,11 +58,16 @@
   </g>
 
     <g transform="translate(1500,3700) scale(1.8,1.8)">
-      <rect x="0" y="0" rx="400" ry="400" width="4500" height="3000" fill="#E6FFFF" stroke="black" stroke-width="100" />
-      <line x1="1300" y1="1200" x2="2300" y2="1200" stroke="#00CED1" stroke-width="200" />
-      <line x1="1300" y1="1800" x2="2300" y2="1800" stroke="#00CED1" stroke-width="200" />
-      <path fill="none" stroke="#00CED1" stroke-width="200" d="M3000,500 A1500,1500,0,0,1,3000,2500" />
+      <rect 
+		x="0" y="0" rx="400" ry="400" 
+		width="4500" height="3000" 
+		style="fill:#E6FFFF;stroke:#000000;stroke-width:100" />
+      <line x1="1300" y1="1200" x2="2300" y2="1200" 
+		style="stroke:#00CED1;stroke-width:200" />
+      <line x1="1300" y1="1800" x2="2300" y2="1800" 
+		style="stroke:#00CED1;stroke-width:200" />
+      <path 
+		style="fill:none;stroke:#00CED1;stroke-width:200" 			d="M3000,500 A1500,1500,0,0,1,3000,2500" />
     </g>
-
 
 </svg>

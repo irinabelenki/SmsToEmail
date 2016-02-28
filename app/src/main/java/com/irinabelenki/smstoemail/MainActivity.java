@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         Notification mNotification = new Notification.Builder(this)
                         .setContentTitle("SmsToEmail")
                         .setContentText("Open Settings")
-                        .setSmallIcon(android.R.drawable.ic_lock_silent_mode)
+                        .setSmallIcon(R.drawable.sms2gmail_small)
                         .setContentIntent(pIntent)
                         //.setSound(soundUri)
                         //.addAction(R.drawable.common_signin_btn_icon_dark, "View", pIntent)
