@@ -96,10 +96,6 @@ public class MainActivity extends AppCompatActivity {
         if (isGooglePlayServicesAvailable()) {
             if (credential.getSelectedAccountName() == null) {
                 chooseAccount();
-            } else {
-                if (!isDeviceOnline()) {
-                    outputTextView.setText("No network connection available.");
-                }
             }
         } else {
             outputTextView.setText("Google Play Services required: " +
@@ -107,8 +103,10 @@ public class MainActivity extends AppCompatActivity {
         }
         SharedPreferences settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
+        String errorMsg = settings.getString(SmsToEmailApplication.PREF_ERROR_MSG, null);
         redirectCheckBox.setEnabled(accountName != null);
         redirectCheckBox.setText("Redirect SMS to " + accountName);
+        outputTextView.setText(errorMsg);
     }
 
     @Override
@@ -193,40 +191,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Attempt to get a set of data from the Gmail API to display. If the
-     * email address isn't known yet, then call chooseAccount() method so the
-     * user can pick an account.
-
-    private void refreshResults() {
-        if (credential.getSelectedAccountName() == null) {
-            chooseAccount();
-        } else {
-            if (isDeviceOnline()) {
-                //new SendEmailTask(mCredential).execute();
-            } else {
-                outputTextView.setText("No network connection available.");
-            }
-        }
-    }
-*/
-    /**
      * Starts an activity in Google Play Services so the user can pick an
      * account.
      */
     private void chooseAccount() {
         startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-    }
-
-    /**
-     * Checks whether the device currently has a network connection.
-     *
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private boolean isDeviceOnline() {
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
     }
 
     /**
@@ -354,35 +323,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    public void showNotification(){
-        // define sound URI, the sound to be played when there's a notification
-        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        // intent triggered, you can add other intent for other actions
-        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-        // this is it, we'll build the notification!
-        // in the addAction method, if you don't want any icon, just set the first param to 0
-        Notification mNotification = new Notification.Builder(this)
+    public static void showNotification(Context context, boolean failed){
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        Notification mNotification = new Notification.Builder(context)
                         .setContentTitle("SmsToEmail")
                         .setContentText("Open Settings")
-                        .setSmallIcon(R.drawable.sms2gmail_small)
+                        .setSmallIcon(failed ? R.drawable.sms_broken : R.drawable.sms2gmail_small)
                         .setContentIntent(pIntent)
-                        //.setSound(soundUri)
-                        //.addAction(R.drawable.common_signin_btn_icon_dark, "View", pIntent)
-                        //.addAction(0, "Remind", pIntent)
                         .build();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // If you want to hide the notification after it was selected, do the code below
-        // myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, mNotification);
     }
 
-    public void cancelNotification(int notificationId){
+    public static void cancelNotification(Context context, int notificationId){
         if (Context.NOTIFICATION_SERVICE != null) {
             String ns = Context.NOTIFICATION_SERVICE;
-            NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(ns);
+            NotificationManager nMgr = (NotificationManager) context.getApplicationContext().getSystemService(ns);
             nMgr.cancel(notificationId);
         }
     }
@@ -390,15 +348,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        cancelNotification(0);
+        cancelNotification(this, 0);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        showNotification();
+        SharedPreferences settings = getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String errorMsg = settings.getString(SmsToEmailApplication.PREF_ERROR_MSG, null);
+        Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
+        if (redirect) {
+            showNotification(this, errorMsg != null);
+        }
     }
 
-
+    public static boolean isDeviceOnline(Context context) {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
 
 }

@@ -21,6 +21,7 @@ public class SmsToEmailApplication extends Application {
     public static final String SHARED_PREF_NAME = "smsToEmailPref";
     public static final String PREF_ACCOUNT_NAME = "accountName";
     public static final String PREF_REDIRECT_TO_EMAIL = "redirectToEmail";
+    public static final String PREF_ERROR_MSG = "errorMsg";
     private static final String[] SCOPES = { GmailScopes.MAIL_GOOGLE_COM };
 
     public void onCreate() {

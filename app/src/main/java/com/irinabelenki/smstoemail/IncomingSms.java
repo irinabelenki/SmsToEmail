@@ -97,14 +97,29 @@ public class IncomingSms extends BroadcastReceiver {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                String displayName = this.getContactDisplayNameByPhoneNumber(params[1]);
-                String msg = "Display name: " + displayName;
-                Log.e(MainActivity.TAG, msg);
+                if (!MainActivity.isDeviceOnline(context)) {
+                    Log.e(MainActivity.TAG, "No network connection");
+
+                    SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString(SmsToEmailApplication.PREF_ERROR_MSG, "No network connection");
+                    editor.apply();
+                    MainActivity.showNotification(context, true);
+                    return null;
+                }
+                String displayName = getContactDisplayNameByPhoneNumber(params[1]);
+                Log.e(MainActivity.TAG, "Display name: " + displayName);
 
                 String subject = "From: " + (displayName == null ? params[1] : displayName);
                 MimeMessage mimeMessage = MessageBuilder.createEmail(params[0], params[1], subject, params[2]);
                 Message message = MessageBuilder.createMessageWithEmail(mimeMessage);
                 MessageBuilder.sendMessage(mService, "me", mimeMessage);
+
+                SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(SmsToEmailApplication.PREF_ERROR_MSG, null);
+                editor.apply();
+                MainActivity.showNotification(context, false);
             } catch (Exception e) {
                 String errorMsg = "Exception in doInBackground: " + e;
                 Log.e(MainActivity.TAG, errorMsg);
@@ -129,15 +144,19 @@ public class IncomingSms extends BroadcastReceiver {
         protected void onCancelled() {
             String errorMsg;
             if (mLastError != null) {
-                GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
-                credential.setSelectedAccountName(null);
                 SharedPreferences settings = context.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
+
+                if (mLastError instanceof UserRecoverableAuthIOException) {
+                    GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
+                    credential.setSelectedAccountName(null);
+                    editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
+                }
+
+                editor.putString(SmsToEmailApplication.PREF_ERROR_MSG, mLastError.getMessage());
                 editor.apply();
 
-                //todo error dialog "some sms could be not forwarded"
-                showErrorDialog();
+                MainActivity.showNotification(context, true);
 
                 errorMsg = "onCancelled: lastError: " + mLastError.toString();
                 Log.e(MainActivity.TAG, errorMsg);
@@ -170,22 +189,6 @@ public class IncomingSms extends BroadcastReceiver {
             }
 
             return name;
-        }
-
-        private void showErrorDialog() {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-            alertDialogBuilder.setTitle("Error");
-
-            alertDialogBuilder
-                    .setMessage("Some SMS could be not forwarded")
-                    .setCancelable(false)
-                    .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            dialog.dismiss();
-                        }
-                    });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
         }
     }
 }
