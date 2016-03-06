@@ -5,16 +5,12 @@ import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +21,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-//import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -328,9 +323,10 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         Notification mNotification = new Notification.Builder(context)
                         .setContentTitle("SmsToEmail")
-                        .setContentText("Open Settings")
+                        .setContentText(failed ? "Error" : "Open Settings")
                         .setSmallIcon(failed ? R.drawable.sms_broken : R.drawable.sms2gmail_small)
                         .setContentIntent(pIntent)
+                        .setOngoing(true)
                         .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
