@@ -23,7 +23,7 @@ import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -61,7 +61,7 @@ public class IncomingSms extends BroadcastReceiver {
                     String messageBody = currentMessage.getDisplayMessageBody();
                     String logMsg = "Received SMS: phoneNumber: " + phoneNumber + "; messageBody: " + messageBody;
                     Log.i(MainActivity.TAG, logMsg);
-                    Toast.makeText(context, logMsg, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, logMsg, Toast.LENGTH_LONG).show();
 
                     GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
                     String[] params = {
@@ -75,7 +75,7 @@ public class IncomingSms extends BroadcastReceiver {
         } catch (Exception e) {
             String errorMsg = "Exception in SMS receiver" + e;
             Log.e(MainActivity.TAG, errorMsg);
-            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -160,11 +160,11 @@ public class IncomingSms extends BroadcastReceiver {
 
                 errorMsg = "onCancelled: lastError: " + mLastError.toString();
                 Log.e(MainActivity.TAG, errorMsg);
-                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
             } else {
                 errorMsg = "onCancelled: Request cancelled";
                 Log.e(MainActivity.TAG, errorMsg);
-                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
             }
         }
 

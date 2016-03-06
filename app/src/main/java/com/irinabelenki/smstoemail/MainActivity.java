@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -109,12 +109,12 @@ public class MainActivity extends AppCompatActivity {
         outputTextView.setText(errorMsg);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    //@Override
+    //public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    //    getMenuInflater().inflate(R.menu.menu_main, menu);
+    //    return true;
+    //}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         //outputTextView.setText("Account was chosen.");
                         String message = "set account name: " + accountName;
                         Log.i(TAG, message);
-                        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 
                         sendConfirmationMail(accountName);
                     }
@@ -165,13 +165,13 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode != RESULT_OK) {
                     String message = "REQUEST_AUTHORIZATION is not OK";
                     Log.i(TAG, message);
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
                     chooseAccount();
                 } else {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     String message = "REQUEST_AUTHORIZATION OK, account name: " + accountName;
                     Log.i(TAG, message);
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
                     sendConfirmationMail(accountName);
                 }
                 break;
@@ -298,27 +298,27 @@ public class MainActivity extends AppCompatActivity {
 
                     errorMsg = "onCancelled: mLastError instanceof GooglePlayServicesAvailabilityIOException ";
                     Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 } else if (mLastError instanceof UserRecoverableAuthIOException) {
                     //todo
                     startActivityForResult(((UserRecoverableAuthIOException) mLastError).getIntent(), REQUEST_AUTHORIZATION);
 
                     errorMsg = "onCancelled: mLastError instanceof UserRecoverableAuthIOException ";
                     Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 } else {
                     outputTextView.setText("The following error occurred:\n" + mLastError.getMessage());
 
                     errorMsg = "onCancelled: The following error occurred:\n" + mLastError.getMessage();
                     Log.e(MainActivity.TAG, errorMsg);
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
                 }
             } else {
                 outputTextView.setText("Request cancelled.");
 
                 errorMsg = "onCancelled: Request cancelled";
                 Log.e(MainActivity.TAG, errorMsg);
-                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
             }
         }
     }
