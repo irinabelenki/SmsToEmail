@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         GoogleAccountCredential credential = ((SmsToEmailApplication) this.getApplicationContext()).getGoogleAccountCredential();
         String[] params = {
                 accountName,
-                "From: SmsToEmail application",
-                "Your SmsToEmail default account was successfully set"};
+                "From: SmsToGmail application",
+                "Your SmsToGmail default account was successfully set"};
 
         new SendEmailTask(this, credential).execute(params);
     }
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         Notification mNotification = new Notification.Builder(context)
-                        .setContentTitle("SmsToEmail")
+                        .setContentTitle("SmsToGmail")
                         .setContentText(failed ? "Error" : "Open Settings")
                         .setSmallIcon(failed ? R.drawable.sms_broken : R.drawable.sms2gmail_small)
                         .setContentIntent(pIntent)
