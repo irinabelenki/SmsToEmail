@@ -322,8 +322,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         Notification mNotification = new Notification.Builder(context)
-                        .setContentTitle("SmsToGmail")
-                        .setContentText(failed ? "Error" : "Open Settings")
+                        .setContentTitle(context.getResources().getString(R.string.app_name))
+                        .setContentText(failed ? context.getResources().getString(R.string.error) :
+                                context.getResources().getString(R.string.open_settings))
                         .setSmallIcon(failed ? R.drawable.sms_broken : R.drawable.sms2gmail_small)
                         .setContentIntent(pIntent)
                         .setOngoing(true)
