@@ -323,11 +323,14 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         Notification mNotification = new Notification.Builder(context)
                         .setContentTitle(context.getResources().getString(R.string.app_name))
-                        .setContentText(failed ? context.getResources().getString(R.string.error) :
+                        .setContentText(failed ?
+                                context.getResources().getString(R.string.error) :
                                 context.getResources().getString(R.string.open_settings))
-                        .setSmallIcon(failed ? R.drawable.sms_broken : R.drawable.sms2gmail_small)
+                        .setSmallIcon(failed ?
+                                R.drawable.mono_sms_broken :
+                                R.drawable.mono_sms2gmail_small)
                         .setContentIntent(pIntent)
-                        .setOngoing(true)
+                        .setOngoing(failed)
                         .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
