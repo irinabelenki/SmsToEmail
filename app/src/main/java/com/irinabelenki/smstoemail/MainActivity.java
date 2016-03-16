@@ -326,9 +326,9 @@ public class MainActivity extends AppCompatActivity {
                         .setContentText(failed ?
                                 context.getResources().getString(R.string.error) :
                                 context.getResources().getString(R.string.open_settings))
-                        .setSmallIcon(failed ?
-                                R.drawable.mono_sms_broken :
-                                R.drawable.mono_sms2gmail_small)
+                        //.setSmallIcon(failed ?
+                        //        R.drawable.mono_sms_broken :
+                        //        R.drawable.mono_sms2gmail_small)
                         .setContentIntent(pIntent)
                         .setOngoing(failed)
                         .build();
