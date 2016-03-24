@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Button setupAccountButton;
     private GoogleAccountCredential credential;
 
+    private SharedPreferences settings;
+
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         outputTextView = (TextView) findViewById(R.id.output_textview);
 
         redirectCheckBox = (CheckBox) findViewById(R.id.redirect_checkbox);
-        SharedPreferences settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
         Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         redirectCheckBox.setChecked(redirect);
@@ -63,8 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        SharedPreferences settings = MainActivity.this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        settings.edit().putBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, buttonView.isChecked()).commit();
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, buttonView.isChecked());
+                        editor.putString(SmsToEmailApplication.PREF_ERROR_MSG, null);
+                        editor.apply();
+                        outputTextView.setText(null);
                     }
                 }
         );
@@ -96,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
             outputTextView.setText("Google Play Services required: " +
                     "after installing, close and relaunch this app.");
         }
-        SharedPreferences settings = this.getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String accountName = settings.getString(SmsToEmailApplication.PREF_ACCOUNT_NAME, null);
         String errorMsg = settings.getString(SmsToEmailApplication.PREF_ERROR_MSG, null);
         redirectCheckBox.setEnabled(accountName != null);
@@ -141,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         credential.setSelectedAccountName(accountName);
-                        SharedPreferences settings = getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(SmsToEmailApplication.PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
@@ -181,6 +184,11 @@ public class MainActivity extends AppCompatActivity {
                 accountName,
                 "From: SmsToGmail application",
                 "Your SmsToGmail default account was successfully set"};
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(SmsToEmailApplication.PREF_ERROR_MSG, null);
+        editor.apply();
+        outputTextView.setText(null);
 
         new SendEmailTask(this, credential).execute(params);
     }
@@ -354,7 +362,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        SharedPreferences settings = getSharedPreferences(SmsToEmailApplication.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String errorMsg = settings.getString(SmsToEmailApplication.PREF_ERROR_MSG, null);
         Boolean redirect = settings.getBoolean(SmsToEmailApplication.PREF_REDIRECT_TO_EMAIL, false);
         if (redirect) {
