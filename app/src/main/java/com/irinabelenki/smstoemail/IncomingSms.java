@@ -17,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
@@ -36,6 +37,9 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.gmail.model.Message;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.mail.internet.MimeMessage;
 
 /**
@@ -52,24 +56,49 @@ public class IncomingSms extends BroadcastReceiver {
         }
 
         final Bundle bundle = intent.getExtras();
+        SmsMessage[] messages = null;
+        Map<String, String> msgMap = null;
         try {
-            if (bundle != null) {
-                final Object[] pdusObj = (Object[]) bundle.get("pdus");
-                for (int i = 0; i < pdusObj.length; i++) {
-                    SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
-                    String phoneNumber = currentMessage.getDisplayOriginatingAddress();
-                    String messageBody = currentMessage.getDisplayMessageBody();
-                    String logMsg = "Received SMS: phoneNumber: " + phoneNumber + "; messageBody: " + messageBody;
-                    Log.i(MainActivity.TAG, logMsg);
-                    //Toast.makeText(context, logMsg, Toast.LENGTH_LONG).show();
+            if (bundle != null && bundle.containsKey("pdus")) {
+                final Object[] pdus = (Object[]) bundle.get("pdus");
+                if (pdus != null) {
+                    Log.i(MainActivity.TAG, "pdus num: " + pdus.length);
+                    messages = new SmsMessage[pdus.length];
+                    msgMap = new HashMap<String, String>(pdus.length);
+                    for (int i = 0; i < pdus.length; i++) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            String format = bundle.getString("format");
+                            messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
+                            Log.i(MainActivity.TAG, "1curr mess: " + messages[i] + " format: " +format);
+                        }
+                        else {
+                            messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                            Log.i(MainActivity.TAG, "2curr mess: " + messages[i]);
+                        }
 
-                    GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
-                    String[] params = {
-                            accountName,
-                            phoneNumber,
-                            messageBody};
+                        String originatingAddress = messages[i].getDisplayOriginatingAddress();
+                        String messageBody = messages[i].getDisplayMessageBody();
+                        Log.i(MainActivity.TAG, "Received SMS: phoneNumber: " + originatingAddress + "; messageBody: " + messageBody);
 
-                    new SendEmailTask(context, credential).execute(params);
+                        if (!msgMap.containsKey(originatingAddress)) {
+                            msgMap.put(messages[i].getOriginatingAddress(), messages[i].getDisplayMessageBody());
+                        } else {
+                            String previousParts = msgMap.get(originatingAddress);
+                            msgMap.put(originatingAddress, previousParts + messages[i].getDisplayMessageBody());
+                        }
+                    }
+
+                    for (Map.Entry<String, String> entry : msgMap.entrySet()) {
+                        Log.i(MainActivity.TAG, "Key : " + entry.getKey() + " Value : " + entry.getValue());
+
+                        GoogleAccountCredential credential = ((SmsToEmailApplication) context.getApplicationContext()).getGoogleAccountCredential();
+                        String[] params = {
+                                accountName,
+                                entry.getKey(),
+                                entry.getValue()};
+
+                        new SendEmailTask(context, credential).execute(params);
+                    }
                 }
             }
         } catch (Exception e) {
